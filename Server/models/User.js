@@ -9,6 +9,6 @@ const userSchema = new mongoose.Schema({
     enum: ["Admin", "ProjectManager", "TeamMember"],
     default: "TeamMember",
   },
-}, { timestamps: true });
+});
 
 module.exports = mongoose.model("User", userSchema);
