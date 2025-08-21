@@ -4,6 +4,7 @@ const Team = require("../models/team");
 
 const router = express.Router();
 
+//create team only admin & pm
 router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res) => {
   try {
     const team = await Team.create({
@@ -17,6 +18,7 @@ router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res)
   }
 });
 
+//
 router.post("/join/:teamId", protect, authorize("TeamMember"), async (req, res) => {
   try {
     const team = await Team.findById(req.params.teamId);
@@ -33,6 +35,7 @@ router.post("/join/:teamId", protect, authorize("TeamMember"), async (req, res) 
   }
 });
 
+//get all teams
 router.get("/my-teams", protect, async (req, res) => {
   try {
     const teams = await Team.find({ members: req.user._id }).populate("members", "name email role");

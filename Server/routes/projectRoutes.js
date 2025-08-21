@@ -4,6 +4,7 @@ const Project = require("../models/project");
 
 const router = express.Router();
 
+//create project only admin or pm can do
 router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res) => {
   try {
     const project = await Project.create({
@@ -18,6 +19,7 @@ router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res)
   }
 });
 
+//get all projects
 router.get("/", protect, async (req, res) => {
   try {
     const projects = await Project.find().populate("teamMembers", "name email role");
@@ -27,16 +29,21 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+//delete project only admin can do
 router.delete("/:projectId", protect, authorize("Admin"), async (req, res) => {
   try {
     const project = await Project.findById(req.params.projectId);
-    if (!project) return res.status(404).json({ error: "Project not found" });
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
 
-    await project.remove();
+    await Project.findByIdAndDelete(req.params.projectId);
     res.json({ msg: "Project deleted successfully" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed to delete project" });
   }
 });
+
 
 module.exports = router;
