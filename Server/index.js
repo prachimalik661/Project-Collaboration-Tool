@@ -7,6 +7,7 @@ const initPassport = require("./config/passport");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const teamRoutes = require("./routes/teamRoutes");
+const activityRoutes = require("./routes/activityRoutes");
 
 dotenv.config();
 connectDB();
@@ -24,6 +25,8 @@ app.get("/", (req, res) => {
 app.use("/api/projects", projectRoutes)
 app.use("/api/tasks", taskRoutes);
 app.use("/api/teams", teamRoutes);
+app.use("/api/activity", activityRoutes);
+
 const PORT = process.env.PORT || 5000; 
 
 app.listen(PORT, () =>{

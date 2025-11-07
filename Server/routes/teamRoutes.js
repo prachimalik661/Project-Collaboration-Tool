@@ -1,6 +1,7 @@
 const express = require("express");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const Team = require("../models/team");
+const logActivity = require("../utils/activityLogger");
 
 const router = express.Router();
 
@@ -16,9 +17,11 @@ router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res)
   } catch (error) {
     res.status(500).json({ error: "Failed to create team" });
   }
+  await logActivity(req.user._id, `Created team: ${team.name}`);
+
 });
 
-//
+//join team
 router.post("/join/:teamId", protect, authorize("TeamMember"), async (req, res) => {
   try {
     const team = await Team.findById(req.params.teamId);
@@ -28,6 +31,7 @@ router.post("/join/:teamId", protect, authorize("TeamMember"), async (req, res) 
       team.members.push(req.user._id);
       await team.save();
     }
+    await logActivity(req.user._id, `Joined team: ${team.name}`);
 
     res.json({ msg: "Joined the team", team });
   } catch (error) {
@@ -55,6 +59,8 @@ router.delete("/:teamId", protect, authorize("Admin"), async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to delete team" });
   }
+  await logActivity(req.user._id, `Deleted team: ${team.name}`);
+
 });
 
 

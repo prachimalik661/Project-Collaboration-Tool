@@ -3,6 +3,8 @@ const { protect, authorize } = require("../middleware/authMiddleware");
 const Task = require("../models/Task");
 const sendEmail = require("../utils/mailer");
 const router = express.Router();
+const logActivity = require("../utils/activityLogger");
+const User = require("../models/User");  // REQUIRED for task assignedTo
 
 //create task only admin or pm
 router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res) => {
@@ -13,6 +15,7 @@ router.post("/", protect, authorize("Admin", "ProjectManager"), async (req, res)
       project: req.body.projectId,
       assignedTo: req.body.assignedTo
     });
+    await logActivity(req.user._id, `Created task: ${task.title}`, task._id, task.project);
 
     // Find user jisko assign hua
     const assignedUser = await User.findById(req.body.assignedTo);
@@ -57,6 +60,7 @@ exports.updateTask = async (req, res) => {
     }
 
     await task.save();
+    await logActivity(req.user._id, `Updated task status to ${task.status}`, task._id, task.project);
 
     // Send email on update
     if (task.assignedTo?.email) {
@@ -84,6 +88,8 @@ router.delete("/:taskId", protect, authorize("Admin", "ProjectManager"), async (
   } catch (error) {
     res.status(500).json({ error: "Failed to delete task" });
   }
+  await logActivity(req.user._id, `Deleted task: ${task.title}`, task._id, task.project);
+
 });
 
 
