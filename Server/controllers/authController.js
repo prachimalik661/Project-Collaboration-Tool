@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 exports.signup = async (req, res) => {
+  console.log("Register request received:", req.body);
+
   try {
     const { name, email, password, role } = req.body;
 

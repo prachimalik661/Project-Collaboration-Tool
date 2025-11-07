@@ -2,18 +2,24 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const passport = require("passport");
-const authRoutes = require("./routes/authRoutes");
 const initPassport = require("./config/passport");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const activityRoutes = require("./routes/activityRoutes");
+const authRoutes = require("./routes/authRoutes");
+const cors = require("cors");
 
 dotenv.config();
 connectDB();
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 
 initPassport(passport);
 app.use(passport.initialize());
